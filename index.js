@@ -1,41 +1,41 @@
-const express = require("express");
-const cors = require("cors");
-const { connection } = require("./config/db");
-const { userrouter } = require("./routes/user.route");
-// const { auth } = require("./middlewares/authentication.middleware");
-require("dotenv").config();
-const { DealersRoute } = require("./routes/Dealers.route");
-const { OEM_SpecsRoute } = require("./routes/OEM_Specs.route");
+const express = require("express")
+require('dotenv').config()
+const cors = require('cors')
+const { connection } = require("./db")
+const { MarketplaceInventoryRouter } = require("./routes/MarketplaceInventory.route")
+const { dealerRouter } = require("./routes/Dealer.route")
+const { OEMRouter } = require("./routes/OEM.route")
+const { auth } = require("./middleware/Auth.middleware")
+const { MarketplaceInventoryModel } = require("./model/marketplaceInventory.model")
 
-let app = express();
-app.use(express.json());
-app.use(cors());
+const app=express()
+app.use(cors())
+app.use(express.json())
+
+MarketplaceInventoryRouter.get("/",async(req,res)=>{
+    try{
+        const oldCars = await MarketplaceInventoryModel.find().populate('oemSpecs')
+        res.send(oldCars)
+    }catch(err){
+        console.log({"msg":"Error Occured","error":err})
+    }
+})
+app.use("/dealer",dealerRouter)
+app.use(auth)
+app.use("/OEM",OEMRouter)
+app.use("/MarketplaceInventory",MarketplaceInventoryRouter)
+
+app.get("/",(req,res)=>{
+    res.send("Home page")
+})
 
 
-
-
-app.use("/user", userrouter);
-app.use("/dealers", DealersRoute);
-app.use("/oem", OEM_SpecsRoute);
-
-
-
-
-
-
-
-
-
-
-//get
-
-
-app.listen(process.env.port, async () => {
-  try {
-    await connection;
-    console.log("connected to the db");
-  } catch (error) {
-    console.log(error);
-  }
-  console.log(`server running on ${process.env.port} `);
-});
+app.listen(process.env.port,async()=>{
+    try{
+        await connection
+        console.log("connected to DB")
+    }catch(err){
+        console.log('err:', err)
+    }
+    console.log(`server running at PORT ${process.env.port}`)
+})
