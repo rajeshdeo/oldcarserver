@@ -41,7 +41,9 @@ OEMRouter.post("/post",async(req,res)=>{
     const data = req.body.data
     console.log('data:', data)
     try{
-        const notes = await OEMSpecsModel.insertMany(data)
+        const notes = new OEMSpecsModel(data)
+       
+    await notes.save()
         res.send(notes)
     }catch(err){
         console.log({"msg":"Error Occured","error":err})

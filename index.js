@@ -21,7 +21,7 @@ MarketplaceInventoryRouter.get("/",async(req,res)=>{
     }
 })
 app.use("/dealer",dealerRouter)
-app.use(auth)
+// app.use(auth)
 app.use("/OEM",OEMRouter)
 app.use("/MarketplaceInventory",MarketplaceInventoryRouter)
 
